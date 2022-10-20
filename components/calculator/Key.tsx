@@ -1,4 +1,4 @@
-import { useContext } from "react"
+import { useState, useContext } from "react"
 import { ResultContext } from "../../context/ResultContext"
 
 const Key = ({ title, value }: any) => {
@@ -13,6 +13,9 @@ const Key = ({ title, value }: any) => {
 
 	const handleKeyClick = () => {
 		switch (value) {
+			case ".":
+				handleDotValue()
+				break
 			case "+":
 				handleOperation(value)
 				break
@@ -40,6 +43,12 @@ const Key = ({ title, value }: any) => {
 		}
 	}
 
+	const handleDotValue = () => {
+		if (currentCounter.includes(".") === false) {
+			setCurrentCounter(currentCounter + ".0")
+		}
+	}
+
 	const handleOperation = (val: string) => {
 		if (currentCounter !== "0") {
 			setLastCounter(currentCounter)
@@ -63,8 +72,12 @@ const Key = ({ title, value }: any) => {
 	}
 
 	const handleDelete = () => {
-		if (currentCounter !== "Invalid Input") {
-			setCurrentCounter(currentCounter.slice(0, -1))
+		if (currentCounter.length > 1) {
+			if (currentCounter !== "0" && currentCounter !== "Invalid Input") {
+				setCurrentCounter(currentCounter.slice(0, -1))
+			} else {
+				setCurrentCounter("0")
+			}
 		} else {
 			setCurrentCounter("0")
 		}
@@ -77,6 +90,16 @@ const Key = ({ title, value }: any) => {
 	}
 
 	const handleDefaultValue = (val: string) => {
+		if (
+			currentCounter.substring(
+				currentCounter.length,
+				currentCounter.length - 2
+			) === ".0"
+		) {
+			return setCurrentCounter(
+				currentCounter.substring(0, currentCounter.length - 1) + val
+			)
+		}
 		if (currentCounter === "0") {
 			return setCurrentCounter(val)
 		}
@@ -86,22 +109,28 @@ const Key = ({ title, value }: any) => {
 			return setCurrentCounter(val)
 		}
 	}
+	console.log()
 
-	let style = ""
+	let style = " "
 
 	switch (value) {
-		case "=":
-			style += " col-span-2 bg-blue-400"
 		case "reset":
-			style += " col-span-2 bg-red-700"
+			style += "col-span-2 bg-red-700"
+			break
+		case "=":
+			style += "col-span-2 bg-blue-400"
+			break
 		case "delete":
-			style += " bg-red-700"
+			style += "bg-red-700"
+			break
 		default:
-			style += " bg-orange-200"
+			style += "bg-orange-200"
+			break
 	}
 
 	return (
-		<div
+		<button
+			type="button"
 			onClick={handleKeyClick}
 			className={
 				"p-3 sm:p-6 text-sm sm:text-xl text-center font-bold rounded-xl cursor-pointer select-none hover:bg-opacity-60 hover:drop-shadow-1xl transition-all ease-in-out" +
@@ -109,7 +138,7 @@ const Key = ({ title, value }: any) => {
 			}
 		>
 			{title}
-		</div>
+		</button>
 	)
 }
 
